@@ -6,7 +6,7 @@ from tkinter import filedialog as fd
 from PIL import Image, ImageTk
 from tkcalendar import DateEntry
 
-from view import atualizar_form, inserir_form
+from view import atualizar_form, inserir_form, deletar_form, ver_item
 
 co0 = "#355C7D"  # Azul profundo
 co1 = "#725A7A"  # Roxo suave
@@ -69,6 +69,7 @@ frameDireita.pack(fill=BOTH, expand=True)
 
 # Variáveis globais
 imagem_string = ""
+l_imagem_exibicao = None
 
 # Função para carregar imagem
 def escolher_imagem():
@@ -140,7 +141,7 @@ def atualizar():
         e_area.insert(END, treev_lista[2])
         e_desc.insert(END, treev_lista[3])
         e_marca.insert(END, treev_lista[4])
-        e_data.set_date(treev_lista[5])  # Correção para DateEntry
+        e_data.set_date(treev_lista[5])
         e_valor.insert(END, treev_lista[6])
         e_serie.insert(END, treev_lista[7])
         
@@ -158,7 +159,7 @@ def atualizar():
             
             lista_atualizar = (nome, area, descricao, marca, data_aquisicao, valor, serie, imagem, id)
             
-            for i in lista_atualizar[:-1]:  # Verifica todos exceto o ID
+            for i in lista_atualizar[:-1]:
                 if i == "":
                     messagebox.showerror("Erro", "Por favor, preencha todos os campos.")
                     return
@@ -194,13 +195,83 @@ def atualizar():
     except Exception as e:
         messagebox.showerror("Erro", f"Erro ao selecionar item: {str(e)}")
 
-# Função deletar (adicionei esqueleto)
+# Função deletar
 def deletar():
-    messagebox.showinfo("Info", "Função deletar será implementada")
+    try:
+        treev_dados = tree.focus()
+        if not treev_dados:
+            messagebox.showwarning("Aviso", "Selecione um item para deletar.")
+            return
+            
+        treev_dicionario = tree.item(treev_dados)
+        treev_lista = treev_dicionario['values']
+        
+        if not treev_lista:
+            messagebox.showwarning("Aviso", "Selecione um item válido.")
+            return
+            
+        valor = treev_lista[0]
 
-# Função ver item (adicionei esqueleto)
-def ver_item():
-    messagebox.showinfo("Info", "Função ver item será implementada")
+        # Confirmação antes de deletar
+        resposta = messagebox.askyesno("Confirmar", "Tem certeza que deseja deletar este item?")
+        if resposta:
+            deletar_form([valor])
+            messagebox.showinfo('Sucesso', 'Os dados foram deletados com sucesso')
+            mostrar()
+
+    except IndexError:
+        messagebox.showerror('Erro', 'Selecione um item na tabela')
+    except Exception as e:
+        messagebox.showerror('Erro', f'Erro ao deletar item: {str(e)}')
+
+# Função para ver imagem
+def ver_imagem():
+    global l_imagem_exibicao
+
+    try:
+        treev_dados = tree.focus()
+        if not treev_dados:
+            messagebox.showwarning("Aviso", "Selecione um item para ver a imagem.")
+            return
+            
+        treev_dicionario = tree.item(treev_dados)
+        treev_lista = treev_dicionario['values']
+        
+        if not treev_lista:
+            messagebox.showwarning("Aviso", "Selecione um item válido.")
+            return
+            
+        # CORREÇÃO: Passar o ID diretamente como inteiro
+        id_item = int(treev_lista[0])
+        iten = ver_item(id_item)
+        
+        if not iten or not iten[0][8]:
+            messagebox.showinfo("Info", "Este item não possui imagem.")
+            return
+            
+        imagem = iten[0][8]
+
+        # Limpar imagem anterior se existir
+        if l_imagem_exibicao:
+            l_imagem_exibicao.destroy()
+
+        # Abrindo a imagem
+        try:
+            imagem_aberta = Image.open(imagem)
+            imagem_aberta = imagem_aberta.resize((170, 170))
+            imagem_tk = ImageTk.PhotoImage(imagem_aberta)
+
+            l_imagem_exibicao = Label(frameMeio, image=imagem_tk, bg=co4)
+            l_imagem_exibicao.image = imagem_tk
+            l_imagem_exibicao.place(x=700, y=10)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir a imagem: {str(e)}")
+
+    except IndexError:
+        messagebox.showerror('Erro', 'Selecione um item na tabela')
+    except Exception as e:
+        messagebox.showerror('Erro', f'Erro ao carregar imagem: {str(e)}')
 
 # Criando os campos de entrada
 # Campo: Nome do Item
@@ -328,7 +399,7 @@ botao_deletar = Button(
 )
 botao_deletar.place(x=330, y=90)
 
-# Botão Ver Item
+# Botão Ver Imagem
 img_item = Image.open('item.png').resize((20, 20))
 img_item = ImageTk.PhotoImage(img_item)
 
@@ -337,13 +408,13 @@ botao_ver = Button(
     image=img_item, 
     compound=LEFT, 
     anchor=NW, 
-    text="   VER ITEM", 
+    text="   VER IMAGEM", 
     width=95, 
     overrelief=RIDGE,  
     font=('ivy 8'), 
     bg=co2, 
     fg=co5,
-    command=ver_item 
+    command=ver_imagem
 )
 botao_ver.place(x=330, y=221)
 
@@ -398,11 +469,9 @@ def mostrar():
     for item in tree.get_children():
         tree.delete(item)
     
-    # Definindo os cabeçalhos
-    tabela_head = ['#Item', 'Nome', 'Área', 'Descrição', 'Marca/Modelo', 'Data de Aquisição', 'Valor (R$)', 'Nº Série']
-    
     # Lista de itens (exemplo vazio - você precisará buscar do banco)
     lista_itens = []  
+    
     # Inserindo os dados na tabela
     for item in lista_itens:
         tree.insert('', 'end', values=item)
