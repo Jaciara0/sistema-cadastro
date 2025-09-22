@@ -129,121 +129,115 @@ l_serie.place(x=10, y=190)
 e_serie = Entry(frameMeio, width=30, justify='left', relief='solid')
 e_serie.place(x=130, y=191)
 
-janela.mainloop()
-
-# Criando botões do CRUD
 # Botão para carregar imagem do item
-l_carregar = Label(frameMeio, text="Imagem do Item", height=1, anchor=NW, font=('Segoe UI', 10, 'bold'), bg=co4, fg=co0)
-l_carregar.place(x=10, y=220)
+l_imagem = Label(frameMeio, text="Imagem do item", height=1, anchor=NW, font=('Segoe UI', 10, 'bold'), bg=co4, fg=co0)
+l_imagem.place(x=10, y=220)
 
 botao_carregar = Button(
     frameMeio, 
-    compound=CENTER,
-    anchor=CENTER,
-    text="Carregar Imagem",
-    width=30,
-    overrelief=RIDGE,
-    font=('Segoe UI', 10, 'bold'),
-    bg=co2,
-    fg=co4
+    compound=CENTER, 
+    anchor=CENTER, 
+    text="CARREGAR", 
+    width=30, 
+    overrelief=RIDGE,  
+    font=('ivy 8'), 
+    bg=co2, 
+    fg=co5
 )
 botao_carregar.place(x=130, y=221)
 
-# Botão para adicionar item
-img_add = Image.open("add.png").resize((20, 20))
+# Botão Adicionar
+img_add = Image.open('add.png').resize((20, 20))
 img_add = ImageTk.PhotoImage(img_add)
 
 botao_inserir = Button(
-    frameMeio,
-    image=img_add,
-    compound=LEFT,
-    anchor=NW,
-    text='     Adicionar Item',
-    width=95,
-    overrelief=RIDGE,
-    font=('Segoe UI', 10, 'bold'),
-    bg=co2,
-    fg=co4
-    
+    frameMeio, 
+    image=img_add, 
+    compound=LEFT, 
+    anchor=NW, 
+    text="   ADICIONAR", 
+    width=95, 
+    overrelief=RIDGE,  
+    font=('ivy 8'), 
+    bg=co2, 
+    fg=co5
 )
 botao_inserir.place(x=330, y=10)
 
-# Botão para atualizar item
-img_update = Image.open("update.png").resize((20, 20))
+# Botão Atualizar
+img_update = Image.open('update.png').resize((20, 20))
 img_update = ImageTk.PhotoImage(img_update)
 
 botao_atualizar = Button(
-    frameMeio,
-    image=img_update,
-    compound=LEFT,
-    anchor=NW,
-    text='     Atualizar Item',
-    width=95,
-    overrelief=RIDGE,
-    font=('Segoe UI', 10, 'bold'),
-    bg=co2,
-    fg=co4
+    frameMeio, 
+    image=img_update, 
+    compound=LEFT, 
+    anchor=NW, 
+    text="   ATUALIZAR", 
+    width=95, 
+    overrelief=RIDGE,  
+    font=('ivy 8'), 
+    bg=co2, 
+    fg=co5
 )
 botao_atualizar.place(x=330, y=50)
 
-# Botão para deletar item
-img_delete = Image.open("delete.png").resize((20, 20))
+# Botão Deletar
+img_delete = Image.open('delete.png').resize((20, 20))
 img_delete = ImageTk.PhotoImage(img_delete)
+
 botao_deletar = Button(
-    frameMeio,
-    image=img_delete,
-    compound=LEFT,
-    anchor=NW,
-    text='     Deletar Item',
-    width=95,
-    overrelief=RIDGE,
-    font=('Segoe UI', 10, 'bold'),
-    bg=co2,
-    fg=co4
+    frameMeio, 
+    image=img_delete, 
+    compound=LEFT, 
+    anchor=NW, 
+    text="   DELETAR", 
+    width=95, 
+    overrelief=RIDGE,  
+    font=('ivy 8'), 
+    bg=co2, 
+    fg=co5
 )
 botao_deletar.place(x=330, y=90)
 
-# Botão ver item
-img_item = Image.open("item.png").resize((20, 20))
+# Botão Ver Item
+img_item = Image.open('item.png').resize((20, 20))
 img_item = ImageTk.PhotoImage(img_item)
 
 botao_ver = Button(
-    frameMeio,
-    image=img_item,
-    compound=LEFT,
-    anchor=NW,
-    text='     Ver Item',
-    width=95,
-    overrelief=RIDGE,
-    font=('Segoe UI', 10, 'bold'),
-    bg=co2,
-    fg=co4
+    frameMeio, 
+    image=img_item, 
+    compound=LEFT, 
+    anchor=NW, 
+    text="   VER ITEM", 
+    width=95, 
+    overrelief=RIDGE,  
+    font=('ivy 8'), 
+    bg=co2, 
+    fg=co5
 )
 botao_ver.place(x=330, y=221)
 
-# Labels para total e quantidade de itens
+# Labels para Total e Quantidade
 l_total = Label(
-    frameMeio,
+    frameMeio, 
     width=14, 
     height=2, 
-    anchor=CENTER,
-    font=('Segoe UI', 12, 'bold'),
-    bg=co1,
-    fg=co4,
-    relief=FLAT,
+    anchor=CENTER, 
+    font=('Ivy 17 bold'), 
+    bg=co2, 
+    fg=co5, 
+    relief=FLAT
 )
 l_total.place(x=450, y=17)
 
 l_valor_total = Label(
-    frameMeio,
+    frameMeio, 
     text='  Valor Total de todos os itens  ', 
-    width=14, 
-    height=2, 
-    anchor=NW,
-    font=('Segoe UI', 12, 'bold'),
-    bg=co1,
-    fg=co4,
-    relief=FLAT,
+    anchor=NW, 
+    font=('Ivy 10 bold'), 
+    bg=co2, 
+    fg=co5
 )
 l_valor_total.place(x=450, y=12)
 
@@ -253,8 +247,8 @@ l_qtd = Label(
     height=2, 
     anchor=CENTER, 
     font=('Ivy 25 bold'), 
-    bg=co7, 
-    fg=co1, 
+    bg=co2, 
+    fg=co5, 
     relief=FLAT
 )
 l_qtd.place(x=450, y=90)
@@ -264,9 +258,64 @@ l_qtd_itens = Label(
     text='Quantidade total de itens', 
     anchor=NW, 
     font=('Ivy 10 bold'), 
-    bg=co7, 
-    fg=co1
+    bg=co2, 
+    fg=co5
 )
 l_qtd_itens.place(x=460, y=92)
 
+# Criando uma tabela com Treeview
+# Função para mostrar os dados na tabela
+def mostrar():
+    # Definindo os cabeçalhos
+    tabela_head = ['#Item', 'Nome', 'Área', 'Descrição', 'Marca/Modelo', 'Data de Aquisição', 'Valor (R$)', 'Nº Série'  ]
 
+# Lista de itens (exemplo vazio)
+    lista_itens = []
+    
+    global tree
+    
+    # Configurando a Treeview
+    tree = ttk.Treeview(
+        frameDireita, 
+        selectmode="extended", 
+        columns=tabela_head, 
+        show="headings"
+    )
+    
+    # Scrollbars
+    vsb = ttk.Scrollbar(frameDireita, orient="vertical", command=tree.yview)
+    hsb = ttk.Scrollbar(frameDireita, orient="horizontal", command=tree.xview)
+    tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+    
+    #Posicionando a Treeview e as scrollbars
+    tree.grid(column=0, row=0, sticky='nsew')
+    vsb.grid(column=1, row=0, sticky='ns')
+    hsb.grid(column=0, row=1, sticky='ew')
+    frameDireita.grid_rowconfigure(0, weight=12)
+    
+    # Configuração das colunas
+    hd = ["center"] * len(tabela_head)
+    h = [40, 150, 100, 160, 130, 100, 100, 100]
+    
+    for n, col in enumerate(tabela_head):
+        tree.heading(col, text=col.title(), anchor=CENTER)
+        tree.column(col, width=h[n], anchor=hd[n])
+        
+    # Inserindo os dados na tabela
+    for item in lista_itens:
+        tree.insert('', 'end', values=item)
+        
+    # Calculo do total e quantidade de itens
+    quantidade = [item[6] for item in lista_itens]
+    Total_valor = sum(quantidade)
+    Total_itens = len(quantidade)
+    
+    # Atualizando os labels de total e quantidade
+    l_total['text'] = 'R$ {:,.2f}'.format(Total_valor)
+    l_qtd['text'] = Total_itens
+    
+   #  Chamada da função
+mostrar()
+
+#  Execução da janela
+janela.mainloop()
