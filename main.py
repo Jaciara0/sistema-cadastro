@@ -6,6 +6,7 @@ from tkinter import filedialog as fd
 from PIL import Image, ImageTk
 from tkcalendar import DateEntry
 
+from view import atualizar_form, inserir_form
 
 co0 = "#355C7D"  # Azul profundo
 co1 = "#725A7A"  # Roxo suave
@@ -19,26 +20,20 @@ co8 = "#D9E4EC"  # Azul acinzentado
 co9 = "#F1FAEE"  # Fundo alternativo
 
 # Janela principal
-
 janela = Tk()
 janela.title("Sistema de Inventário")
 janela.geometry("900x600")
 janela.configure(background=co4)
 janela.resizable(width=FALSE, height=FALSE)
 
-
 # Estilo visual
-
 style = ttk.Style(janela)
 style.theme_use("clam")
-
 style.configure("TLabel", background=co4, foreground=co0, font=("Segoe UI", 12))
 style.configure("TButton", background=co2, foreground="white", font=("Segoe UI", 10, "bold"))
 style.map("TButton", background=[("active", co3)])
 
-
 # Frame superior (cabeçalho)
-
 frameCima = Frame(janela, bg=co0, height=80)
 frameCima.pack(fill=X)
 
@@ -64,19 +59,148 @@ app_logo.pack(anchor=NW)
 linha = Frame(frameCima, bg=co2, height=2)
 linha.pack(fill=X, padx=10, pady=(0, 5))
 
-
 # Frame do meio (conteúdo principal)
-
 frameMeio = Frame(janela, bg=co4, height=350, padx=20, pady=20)
 frameMeio.pack(fill=X)
 
-
 # Frame inferior (rodapé)
-
 frameDireita = Frame(janela, bg=co0, height=170, padx=20, pady=10)
 frameDireita.pack(fill=BOTH, expand=True)
 
-# Executando a janela
+# Variáveis globais
+imagem_string = ""
+
+# Função para carregar imagem
+def escolher_imagem():
+    global imagem_string
+    imagem_string = fd.askopenfilename()
+    print(f"Imagem selecionada: {imagem_string}")
+
+# Função inserir
+def inserir():
+    global imagem_string
+    nome = e_nome.get()
+    area = e_area.get()
+    descricao = e_desc.get()
+    marca = e_marca.get()
+    data_aquisicao = e_data.get()
+    valor = e_valor.get()
+    serie = e_serie.get()
+    
+    lista_inserir = (nome, area, descricao, marca, data_aquisicao, valor, serie, imagem_string, 1)
+    
+    for i in lista_inserir:
+        if i == "":
+            messagebox.showerror("Erro", "Por favor, preencha todos os campos.")
+            return
+        
+    inserir_form(lista_inserir)
+    messagebox.showinfo("Sucesso", "Item adicionado com sucesso!")
+    
+    # Limpando os campos
+    e_nome.delete(0, END)
+    e_area.delete(0, END)
+    e_desc.delete(0, END)
+    e_marca.delete(0, END)
+    e_data.delete(0, END)
+    e_valor.delete(0, END)
+    e_serie.delete(0, END)
+    imagem_string = ""
+    
+    # Atualizando a tabela
+    mostrar()
+
+# Função atualizar
+def atualizar():
+    try:
+        treev_dados = tree.focus()
+        if not treev_dados:
+            messagebox.showwarning("Aviso", "Selecione um item para atualizar.")
+            return
+            
+        treev_dicionario = tree.item(treev_dados)
+        treev_lista = treev_dicionario['values']
+        
+        if not treev_lista:
+            messagebox.showwarning("Aviso", "Selecione um item válido.")
+            return
+            
+        # Limpando os campos
+        e_nome.delete(0, END)
+        e_area.delete(0, END)
+        e_desc.delete(0, END)
+        e_marca.delete(0, END)
+        e_data.delete(0, END)
+        e_valor.delete(0, END)
+        e_serie.delete(0, END)
+        
+        # Preenchendo os campos com os dados selecionados
+        id = int(treev_lista[0])
+        e_nome.insert(END, treev_lista[1])
+        e_area.insert(END, treev_lista[2])
+        e_desc.insert(END, treev_lista[3])
+        e_marca.insert(END, treev_lista[4])
+        e_data.set_date(treev_lista[5])  # Correção para DateEntry
+        e_valor.insert(END, treev_lista[6])
+        e_serie.insert(END, treev_lista[7])
+        
+        # Função interna para confirmar atualização
+        def confirmar_atualizacao():
+            global imagem_string
+            nome = e_nome.get()
+            area = e_area.get()
+            descricao = e_desc.get()
+            marca = e_marca.get()
+            data_aquisicao = e_data.get()
+            valor = e_valor.get()
+            serie = e_serie.get()
+            imagem = imagem_string or treev_lista[8] if len(treev_lista) > 8 else imagem_string
+            
+            lista_atualizar = (nome, area, descricao, marca, data_aquisicao, valor, serie, imagem, id)
+            
+            for i in lista_atualizar[:-1]:  # Verifica todos exceto o ID
+                if i == "":
+                    messagebox.showerror("Erro", "Por favor, preencha todos os campos.")
+                    return
+                    
+            atualizar_form(lista_atualizar)
+            messagebox.showinfo("Sucesso", "Item atualizado com sucesso!")
+            
+            # Limpando os campos
+            e_nome.delete(0, END)
+            e_area.delete(0, END)
+            e_desc.delete(0, END)
+            e_marca.delete(0, END)
+            e_data.delete(0, END)
+            e_valor.delete(0, END)
+            e_serie.delete(0, END)
+            imagem_string = ""
+            
+            botao_confirmar.destroy()
+            mostrar()
+        
+        # Botão confirmar atualização
+        botao_confirmar = Button(
+            frameMeio, 
+            text="CONFIRMAR ATUALIZAÇÃO", 
+            width=20,
+            command=confirmar_atualizacao,
+            bg=co3,
+            fg="white",
+            font=('ivy 8 bold')
+        )
+        botao_confirmar.place(x=330, y=130)
+        
+    except Exception as e:
+        messagebox.showerror("Erro", f"Erro ao selecionar item: {str(e)}")
+
+# Função deletar (adicionei esqueleto)
+def deletar():
+    messagebox.showinfo("Info", "Função deletar será implementada")
+
+# Função ver item (adicionei esqueleto)
+def ver_item():
+    messagebox.showinfo("Info", "Função ver item será implementada")
 
 # Criando os campos de entrada
 # Campo: Nome do Item
@@ -142,7 +266,8 @@ botao_carregar = Button(
     overrelief=RIDGE,  
     font=('ivy 8'), 
     bg=co2, 
-    fg=co5
+    fg=co5,
+    command=escolher_imagem
 )
 botao_carregar.place(x=130, y=221)
 
@@ -160,7 +285,8 @@ botao_inserir = Button(
     overrelief=RIDGE,  
     font=('ivy 8'), 
     bg=co2, 
-    fg=co5
+    fg=co5,
+    command=inserir
 )
 botao_inserir.place(x=330, y=10)
 
@@ -178,7 +304,8 @@ botao_atualizar = Button(
     overrelief=RIDGE,  
     font=('ivy 8'), 
     bg=co2, 
-    fg=co5
+    fg=co5,
+    command=atualizar
 )
 botao_atualizar.place(x=330, y=50)
 
@@ -196,7 +323,8 @@ botao_deletar = Button(
     overrelief=RIDGE,  
     font=('ivy 8'), 
     bg=co2, 
-    fg=co5
+    fg=co5,
+    command=deletar
 )
 botao_deletar.place(x=330, y=90)
 
@@ -214,7 +342,8 @@ botao_ver = Button(
     overrelief=RIDGE,  
     font=('ivy 8'), 
     bg=co2, 
-    fg=co5
+    fg=co5,
+    command=ver_item 
 )
 botao_ver.place(x=330, y=221)
 
@@ -263,59 +392,66 @@ l_qtd_itens = Label(
 )
 l_qtd_itens.place(x=460, y=92)
 
-# Criando uma tabela com Treeview
 # Função para mostrar os dados na tabela
 def mostrar():
+    # Limpar tabela existente
+    for item in tree.get_children():
+        tree.delete(item)
+    
     # Definindo os cabeçalhos
-    tabela_head = ['#Item', 'Nome', 'Área', 'Descrição', 'Marca/Modelo', 'Data de Aquisição', 'Valor (R$)', 'Nº Série'  ]
-
-# Lista de itens (exemplo vazio)
-    lista_itens = []
+    tabela_head = ['#Item', 'Nome', 'Área', 'Descrição', 'Marca/Modelo', 'Data de Aquisição', 'Valor (R$)', 'Nº Série']
     
-    global tree
-    
-    # Configurando a Treeview
-    tree = ttk.Treeview(
-        frameDireita, 
-        selectmode="extended", 
-        columns=tabela_head, 
-        show="headings"
-    )
-    
-    # Scrollbars
-    vsb = ttk.Scrollbar(frameDireita, orient="vertical", command=tree.yview)
-    hsb = ttk.Scrollbar(frameDireita, orient="horizontal", command=tree.xview)
-    tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-    
-    #Posicionando a Treeview e as scrollbars
-    tree.grid(column=0, row=0, sticky='nsew')
-    vsb.grid(column=1, row=0, sticky='ns')
-    hsb.grid(column=0, row=1, sticky='ew')
-    frameDireita.grid_rowconfigure(0, weight=12)
-    
-    # Configuração das colunas
-    hd = ["center"] * len(tabela_head)
-    h = [40, 150, 100, 160, 130, 100, 100, 100]
-    
-    for n, col in enumerate(tabela_head):
-        tree.heading(col, text=col.title(), anchor=CENTER)
-        tree.column(col, width=h[n], anchor=hd[n])
-        
+    # Lista de itens (exemplo vazio - você precisará buscar do banco)
+    lista_itens = []  
     # Inserindo os dados na tabela
     for item in lista_itens:
         tree.insert('', 'end', values=item)
         
-    # Calculo do total e quantidade de itens
-    quantidade = [item[6] for item in lista_itens]
-    Total_valor = sum(quantidade)
-    Total_itens = len(quantidade)
-    
-    # Atualizando os labels de total e quantidade
-    l_total['text'] = 'R$ {:,.2f}'.format(Total_valor)
-    l_qtd['text'] = Total_itens
-    
-   #  Chamada da função
+    # Cálculo do total e quantidade de itens
+    try:
+        quantidade = [float(item[6]) for item in lista_itens if item[6]]
+        Total_valor = sum(quantidade)
+        Total_itens = len(lista_itens)
+        
+        # Atualizando os labels de total e quantidade
+        l_total['text'] = 'R$ {:,.2f}'.format(Total_valor)
+        l_qtd['text'] = Total_itens
+    except:
+        l_total['text'] = 'R$ 0,00'
+        l_qtd['text'] = '0'
+
+# Configurando a Treeview
+tabela_head = ['#Item', 'Nome', 'Área', 'Descrição', 'Marca/Modelo', 'Data de Aquisição', 'Valor (R$)', 'Nº Série']
+
+tree = ttk.Treeview(
+    frameDireita, 
+    selectmode="extended", 
+    columns=tabela_head, 
+    show="headings"
+)
+
+# Scrollbars
+vsb = ttk.Scrollbar(frameDireita, orient="vertical", command=tree.yview)
+hsb = ttk.Scrollbar(frameDireita, orient="horizontal", command=tree.xview)
+tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+
+# Posicionando a Treeview e as scrollbars
+tree.grid(column=0, row=0, sticky='nsew')
+vsb.grid(column=1, row=0, sticky='ns')
+hsb.grid(column=0, row=1, sticky='ew')
+frameDireita.grid_rowconfigure(0, weight=12)
+frameDireita.grid_columnconfigure(0, weight=1)
+
+# Configuração das colunas
+hd = ["center"] * len(tabela_head)
+h = [40, 150, 100, 160, 130, 100, 100, 100]
+
+for n, col in enumerate(tabela_head):
+    tree.heading(col, text=col.title(), anchor=CENTER)
+    tree.column(col, width=h[n], anchor=hd[n])
+
+# Chamada da função para mostrar dados
 mostrar()
 
-#  Execução da janela
+# Execução da janela
 janela.mainloop()
