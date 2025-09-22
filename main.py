@@ -469,7 +469,7 @@ def mostrar():
     for item in tree.get_children():
         tree.delete(item)
     
-    # Lista de itens (exemplo vazio - você precisará buscar do banco)
+    # Lista de itens
     lista_itens = []  
     
     # Inserindo os dados na tabela
